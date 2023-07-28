@@ -1,29 +1,32 @@
-// import { Schema, model } from "mongoose";
-// import { handleSaveError, validateAtUpdate} from "./hooks.js";
-// import { emailRegexp } from "../constants/user-constant.js";
+import {Schema, model} from "mongoose";
 
-// const userSchema = new Schema({
-// name: {
-//     type: String,
-//     required: true,
-// },
-// email: {
-//     type: String,
-//     match: emailRegexp,
-//     required: true,
-// },
-// password: {
-//     type: String,
-//     minlenth: 6,
-//     required: true,
-// }
-// }, {versionKey: false, timestamps: true});
+import {handleSaveError, validateAtUpdate} from "./hooks.js";
 
-// userSchema.pre("findOneAndUpdate", validateAtUpdate );
+import { emailRegexp } from "../constants/user-constant.js";
 
-// userSchema.post("save", handleSaveError );
-// userSchema.post("findOneAndUpdate", handleSaveError );
+const userSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        match: emailRegexp,
+        unique: true,
+        required: true,
+    },
+    password: {
+        type: String,
+        minlenth: 6,
+        required: true,
+    },
+}, {versionKey: false, timestamps: true});
 
-// const User = model('user', userSchema );
+userSchema.pre("findOneAndUpdate", validateAtUpdate);
 
-// export default User;
+userSchema.post("save", handleSaveError);
+userSchema.post("findOneAndUpdate", handleSaveError);
+
+const User = model("user", userSchema);
+
+export default User;
