@@ -2,8 +2,10 @@ import User from "../models/user.js";
 import HttpError from "../helpers/HttpError.js";
 import userSchemas from "../helpers/user-schema.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-console.log(process.env.JWT_SECRET);
+const {JWT_SECRET} = process.env;
+
 const signup = async (req, res) => {
 
   const { error } = userSchemas.userSignupSchema.validate(req.body);
@@ -41,7 +43,12 @@ const signin = async (req, res) =>{
         throw HttpError(401, "Email or password invalid");
     }
 
-    const token = "213213"
+    const payload = {
+        id: user._id
+    }
+
+    const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "23h"});
+    
     res.json({token})
 
 }
