@@ -10,11 +10,7 @@ const userSchema = new Schema(
     //     type: String,
     //     required: true,
     // },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-    },
-
+   
     password: {
       type: String,
       minlenth: 6,

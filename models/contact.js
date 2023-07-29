@@ -2,6 +2,10 @@ import { Schema, model } from "mongoose";
 import { handleSaveError, validateAtUpdate} from "./hooks.js";
 
 const contactSchema = new Schema({
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+  },
     name: {
         type: String,
         required: [true, 'Set name for contact'],
