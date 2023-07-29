@@ -56,7 +56,13 @@ const signin = async (req, res) =>{
 
     const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "23h"});
     
-    res.json({token})
+    res.status(200).json({
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+      },
+    });
 
 }
 
