@@ -1,26 +1,40 @@
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 
-import {handleSaveError, validateAtUpdate} from "./hooks.js";
+import { handleSaveError, validateAtUpdate } from "./hooks.js";
 
 import { emailRegexp } from "../constants/user-constant.js";
 
-const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
+const userSchema = new Schema(
+  {
+    // name: {
+    //     type: String,
+    //     required: true,
+    // },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
+
+    password: {
+      type: String,
+      minlenth: 6,
+      required: [true, "Set password for user"],
     },
     email: {
-        type: String,
-        match: emailRegexp,
-        // unique: true,
-        required: true,
+      type: String,
+      match: emailRegexp,
+      required: [true, "Email is required"],
+      unique: true,
     },
-    password: {
-        type: String,
-        minlenth: 6,
-        required: true,
+    subscription: {
+      type: String,
+      enum: ["starter", "pro", "business"],
+      default: "starter",
     },
-}, {versionKey: false, timestamps: true});
+    token: String,
+  },
+  { versionKey: false, timestamps: true }
+);
 
 userSchema.pre("findOneAndUpdate", validateAtUpdate);
 

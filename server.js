@@ -4,6 +4,7 @@ import "dotenv/config";
 
 const {DB_HOST, PORT} = process.env;
 
+
 mongoose
   .connect(DB_HOST)
   .then(app.listen(PORT, () => {

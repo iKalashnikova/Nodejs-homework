@@ -3,7 +3,9 @@ import HttpError from "../helpers/HttpError.js";
 import userSchemas from "../helpers/user-schema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import "dotenv/config";
 
+console.log(process.env.JWT_SECRET)
 const {JWT_SECRET} = process.env;
 
 const signup = async (req, res) => {
@@ -23,7 +25,12 @@ const signup = async (req, res) => {
 
   const newUser = await User.create({ ...req.body, password: hashPassword });
 
-  res.status(201).json({ name: newUser.name, email: newUser.email });
+  res.status(201).json({
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+    }
+  });
 
 };
 
