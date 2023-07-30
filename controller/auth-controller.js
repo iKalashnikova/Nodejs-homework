@@ -68,4 +68,12 @@ const signin = async (req, res) =>{
 
 }
 
-export default {signup, signin};
+const getCurrent = (req, res) => {
+const {name, email} = req.user;
+res.json({
+  name, email
+})
+
+}
+
+export default {signup, signin, getCurrent};
