@@ -10,10 +10,9 @@ const userSchema = new Schema(
     //     type: String,
     //     required: true,
     // },
-   
+
     password: {
       type: String,
-      minlenth: 6,
       required: [true, "Set password for user"],
     },
     email: {
@@ -28,8 +27,8 @@ const userSchema = new Schema(
       default: "starter",
     },
     token: {
-        type: String,
-    }
+      type: String,
+    },
   },
   { versionKey: false, timestamps: true }
 );
