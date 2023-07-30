@@ -8,17 +8,17 @@ import "dotenv/config";
 console.log(process.env.JWT_SECRET)
 const {JWT_SECRET} = process.env;
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
 
   const { error } = userSchemas.userSignupSchema.validate(req.body);
   if (error) {
-    throw HttpError(400, error.message);
+    next(HttpError(400, error.message));
   }
 
   const {email, password} = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    throw HttpError(409, "Email in use");
+    next(HttpError(409, "Email in use"));
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
@@ -37,17 +37,17 @@ const signup = async (req, res) => {
 const signin = async (req, res) =>{
     const { error } = userSchemas.userSigninSchema.validate(req.body);
     if (error) {
-      throw HttpError(400, error.message);
+       next(HttpError(400, error.message));
     }
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      throw HttpError(401, "Email or password invalid");
+      next(HttpError(401, "Email or password invalid"));
     }
 
     const passwordCompare = await bcrypt.compare(password, user.password );
     if(!passwordCompare) {
-        throw HttpError(401, "Email or password invalid");
+        next(HttpError(401, "Email or password invalid"));
     }
 
     const payload = {
@@ -55,6 +55,8 @@ const signin = async (req, res) =>{
     }
 
     const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "23h"});
+
+    await User.findByIdAndUpdate(user._id, token);
     
     res.status(200).json({
       token,
