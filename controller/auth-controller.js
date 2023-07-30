@@ -35,18 +35,19 @@ const signup = async (req, res, next) => {
 const signin = async (req, res, next) => {
   const { error } = userSchemas.userSigninSchema.validate(req.body);
   if (error) {
-    next(HttpError(400, error.message));
+    return next(HttpError(400, error.message));
+    
   }
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    next(HttpError(401, "Email or password invalid"));
+    return next(HttpError(401, "Email or password invalid"));
   }
 
   const passwordCompare = await bcrypt.compare(password, user.password);
   
   if (!passwordCompare) {
-    next(HttpError(401, "Email or password invalid"));
+    return next(HttpError(401, "Email or password invalid"));
   }
 
   const payload = {
@@ -67,18 +68,18 @@ const signin = async (req, res, next) => {
 };
 
 const getCurrent = (req, res) => {
-  const { name, email } = req.user;
+  const { subscription, email } = req.user;
   res.json({
-    name,
     email,
+    subscription
   });
 };
 
 const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
-  res.json({
-    message: "Signout success",
+  res.status(204).json({
+    message: "Logout success",
   });
 };
 
