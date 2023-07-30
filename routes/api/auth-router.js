@@ -8,6 +8,6 @@ authRouter.post('/users/register', authController.signup );
 
 authRouter.post('/users/login', authController.signin);
 
-authRouter.get('/current', authenticate, authController.getCurrent);
+authRouter.get('/current', authenticate, authController.getCurrent );
 
 export default authRouter;
