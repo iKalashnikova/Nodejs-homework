@@ -4,11 +4,11 @@ import authenticate from "../../middlewars/authenticate.js";
 
 const authRouter = express.Router();
 
-authRouter.post('/users/register', authController.signup );
+authRouter.post('/register', authController.signup );
 
-authRouter.post('/users/login', authController.signin);
+authRouter.post('/login', authController.signin);
 
-authRouter.get('/users/current', authenticate, authController.getCurrent );
-authRouter.post('/users/logout', authenticate, authController.logout )
+authRouter.get('/current', authenticate, authController.getCurrent );
+authRouter.post('/logout', authenticate, authController.logout )
 
 export default authRouter;

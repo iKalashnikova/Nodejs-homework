@@ -11,13 +11,13 @@ const { JWT_SECRET } = process.env;
 const signup = async (req, res, next) => {
   const { error } = userSchemas.userSignupSchema.validate(req.body);
   if (error) {
-    next(HttpError(400, error.message));
+    return next(HttpError(400, error.message));
   }
 
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    next(HttpError(409, "Email in use"));
+    return next(HttpError(409, "Email in use"));
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
