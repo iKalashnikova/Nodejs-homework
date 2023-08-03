@@ -95,14 +95,21 @@ const updateAvatar = async (req, res) => {
     const avatarPath = path.resolve("public", "avatars");
     const newPath = path.join(avatarPath, filename);
 
-  await fs.rename(oldPath, newPath);
+    console.log("Old Path:", oldPath);
+console.log("New Path:", newPath);
+
+ 
 
   const avatarURL = path.join("avatars", filename);
  
-  const tempPath = path.join("temp", filename)
+  const tempPath = path.join("temp", filename);
+  console.log("Reading image from:", tempPath);
+
   const image = await Jimp.read(tempPath);
   image.resize(250, 250);
-  image.write(tempPath)
+  image.write(tempPath);
+
+  await fs.rename(oldPath, newPath);
  
   const { _id} = req.user;
   await User.findByIdAndUpdate(_id, { avatarURL: avatarURL }, { new: true });
