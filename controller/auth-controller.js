@@ -114,7 +114,7 @@ console.log("New Path:", newPath);
   const { _id} = req.user;
   await User.findByIdAndUpdate(_id, { avatarURL: avatarURL }, { new: true });
   
-  res.json(avatarURL);
+  res.json({avatarURL: avatarURL});
 }
 
 
