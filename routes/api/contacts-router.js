@@ -6,15 +6,18 @@ import isValidId from "../../middlewars/isValidId.js";
 
 import authenticate from '../../middlewars/authenticate.js';
 
+import upload from "../../middlewars/upload.js";
+
 
 const contactsRouter = express.Router();
+
 contactsRouter.use(authenticate);
 
 contactsRouter.get("/", contactsController.getAll );
 
 contactsRouter.get("/:id", isValidId,  contactsController.getById);
 
-contactsRouter.post("/", contactsController.add);
+contactsRouter.post("/", upload.single("poster"), contactsController.add);
 
 contactsRouter.delete("/:id", isValidId, contactsController.deleteById);
 
