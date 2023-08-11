@@ -1,5 +1,7 @@
 import User from "../models/user.js";
 import HttpError from "../helpers/HttpError.js";
+import sendEmail from "../helpers/sendEmail.js";
+import createVerifyEmail from "../helpers/createVerifyEmail.js";
 import userSchemas from "../helpers/user-schema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -9,6 +11,7 @@ import fs from "fs/promises";
 import path from "path";
 import gravatar from "gravatar";
 import Jimp from "jimp";
+import { nanoid } from "nanoid";
 
 const { JWT_SECRET } = process.env;
 
@@ -26,8 +29,14 @@ const signup = async (req, res, next) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const verificationCode = nanoid();
   
-  const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
+  const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL, verificationCode });
+
+  const verifyEmail = createVerifyEmail({email, verificationCode});
+
+  await sendEmail(verifyEmail);
+
 
   res.status(201).json({
     user: {
@@ -49,6 +58,10 @@ const signin = async (req, res, next) => {
   if (!user) {
     return next(HttpError(401, "Email or password invalid"));
   }
+
+  if (!user.verify) {
+   return next(HttpError(401, "Email not verify"));
+}
 
   const passwordCompare = await bcrypt.compare(password, user.password);
   
@@ -72,6 +85,19 @@ const signin = async (req, res, next) => {
     },
   });
 };
+
+const verify = async (req, res, next) => {
+  const { verificationCode } = req.params;
+  const user = await User.findOne({ verificationCode });
+  if (!user) {
+     return next(HttpError(404, "Email not found"));
+  }
+  await User.findByIdAndUpdate(user._id, { verify: true, verificationCode: "" });
+
+  res.json({
+      message: "Verify success"
+  })
+}
 
 const getCurrent = (req, res) => {
   const { subscription, email } = req.user;
@@ -118,4 +144,4 @@ console.log("New Path:", newPath);
 }
 
 
-export default { signup, signin, getCurrent, logout, updateAvatar };
+export default { signup, signin, verify, getCurrent, logout, updateAvatar };
