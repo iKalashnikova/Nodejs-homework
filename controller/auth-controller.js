@@ -87,12 +87,12 @@ const signin = async (req, res, next) => {
 };
 
 const verify = async (req, res, next) => {
-  const { verificationCode } = req.params;
-  const user = await User.findOne({ verificationCode });
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
   if (!user) {
      return next(HttpError(404, "Email not found"));
   }
-  await User.findByIdAndUpdate(user._id, { verify: true, verificationCode: "" });
+  await User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
 
   res.json({
       message: "Verify success"
