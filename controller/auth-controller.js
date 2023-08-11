@@ -29,11 +29,11 @@ const signup = async (req, res, next) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
-  const verificationCode = nanoid();
+  const verificationToken = nanoid();
   
-  const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL, verificationCode });
+  const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL, verificationToken });
 
-  const verifyEmail = createVerifyEmail({email, verificationCode});
+  const verifyEmail = createVerifyEmail({email, verificationToken});
 
   await sendEmail(verifyEmail);
 
@@ -107,13 +107,14 @@ const resendVerifyEmail = async(req, res, next)=> {
   }
 
   const {email} = req.body;
+
   const user = await User.findOne({email});
   if(!user) {
      return next(HttpError(404, "Email not found"));
   }
 
   if(user.verify) {
-      return next(HttpError(400, "Email already verify"))
+      return next(HttpError(400, "Verification has already been passed"))
   }
 
   const verifyEmail = createVerifyEmail({email, verificationToken: user.verificationToken});
@@ -121,7 +122,7 @@ const resendVerifyEmail = async(req, res, next)=> {
   await sendEmail(verifyEmail);
 
   res.json({
-      message: "Resend email success"
+      message: "Verification email sent"
   })
 }
 
