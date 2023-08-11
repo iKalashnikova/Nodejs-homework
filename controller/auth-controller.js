@@ -90,12 +90,38 @@ const verify = async (req, res, next) => {
   const { verificationToken } = req.params;
   const user = await User.findOne({ verificationToken });
   if (!user) {
-     return next(HttpError(404, "Email not found"));
+     return next(HttpError(404, "User not found"));
   }
   await User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
 
   res.json({
-      message: "Verify success"
+      message: "Verify successful"
+  })
+};
+
+const resendVerifyEmail = async(req, res, next)=> {
+
+  const { error } = userSchemas.userEmailSchema.validate(req.body);
+  if (error) {
+    return next(HttpError(400, error.message));
+  }
+
+  const {email} = req.body;
+  const user = await User.findOne({email});
+  if(!user) {
+     return next(HttpError(404, "Email not found"));
+  }
+
+  if(user.verify) {
+      return next(HttpError(400, "Email already verify"))
+  }
+
+  const verifyEmail = createVerifyEmail({email, verificationToken: user.verificationToken});
+
+  await sendEmail(verifyEmail);
+
+  res.json({
+      message: "Resend email success"
   })
 }
 
@@ -144,4 +170,4 @@ console.log("New Path:", newPath);
 }
 
 
-export default { signup, signin, verify, getCurrent, logout, updateAvatar };
+export default { signup, signin, verify, resendVerifyEmail, getCurrent, logout, updateAvatar };

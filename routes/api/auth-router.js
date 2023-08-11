@@ -9,7 +9,7 @@ authRouter.post('/register', authController.signup );
 
 authRouter.get("/verify/:verificationToken", authController.verify);
 
-// authRouter.post("/verify", authController.resendVerifyEmail);
+authRouter.post("/verify", authController.resendVerifyEmail);
 
 authRouter.post('/login', authController.signin);
 
